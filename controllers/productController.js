@@ -27,25 +27,38 @@ exports.getProduct = async (req, res) => {
         res.status(200).json(allUsers);
     } catch (error) {
         res.status(404).send({ message: 'Product not found' });
+    } finally {
+        await prisma.$disconnect();
     }
 };
-/*exports.updateProduct = async (req, res) => {
+exports.updateProduct = async (req, res) => {
     try {
-        res.status(200).json({
-                product: {title: "blue Shirt"}
+        const newProduct = await prisma.product.update({
+            data: req.body,
+            where: {
+                id: 4,
+            }
         });
+        res.status(200).send({ message: 'Product Updated successfully', data: newProduct });
     } catch (error) {
         res.status(404).send({ message: 'Product not found' });
+    } finally {
+        await prisma.$disconnect();
     }
 };
 exports.deleteProduct = async (req, res) => {
     try {
-        res.status(200).json({
-                product: {title: "red Shirt"}
+        const newProduct = await prisma.product.delete({
+            where: {
+                id: 2,
+            }
         });
+        res.status(200).send({ message: 'Product Deleted successfully', data: newProduct });
     } catch (error) {
         res.status(404).send({ message: 'Product not found' });
+    } finally {
+        await prisma.$disconnect();
     }
-};*/
+};
 
 
