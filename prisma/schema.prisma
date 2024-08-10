@@ -56,13 +56,22 @@ model User {
   userName        String      @unique
   email           String      @unique
   password        String
-  token           String?
   createdAt       DateTime    @default(now())
   roles           Role[]
+  tokens          Token[]   
 }
 
 model Role {
   id              Int         @id @default(autoincrement())
   name            String      @unique
   users           User[]   
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

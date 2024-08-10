@@ -24,6 +24,7 @@ exports.register = async (data) => {
         },
         include: {
           roles: true, // Include roles in the response
+          tokens: true,
         },
     });
     return newUser;
@@ -40,7 +41,10 @@ exports.login = async (data) => {
   if (!user || !(await bcrypt.compare(password, user.password))) {
     throw new Error('Invalid email or password');
   }
- 
+  // Delete any existing tokens for the user
+  await prisma.token.deleteMany({
+    where: { userId: user.id },
+  });
   const token = jwt.sign({ id: user.id, role: user.roles[0].name }, process.env.JWT_SECRET_KEY, {
     expiresIn: '1h'
   });
@@ -49,14 +53,14 @@ exports.login = async (data) => {
   if(!passwordMatch){
     throw new Error('Authentication failed');
   }
-
-  const newUser = await prisma.user.update({
-    where: {
-      id:user.id
-    },
+  const expiresAt = new Date();
+  expiresAt.setHours(expiresAt.getHours() + 1);
+  const newToken = await prisma.token.create({
     data: {
-      token: token,
-    }
+      token,
+      expiresAt,
+      user: { connect: { id: user.id } },
+    },
   });
-  return newUser;
+  return {newToken, user};
 };
