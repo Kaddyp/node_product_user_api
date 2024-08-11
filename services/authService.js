@@ -4,7 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.register = async (data) => {
-    const { userName, email, password, roles } = data;
+    const { userName, email, password, role } = data;
     const existingUser = await prisma.user.findUnique({
         where: {
           email: email,
@@ -20,7 +20,14 @@ exports.register = async (data) => {
           userName,
           email,
           password: hashedPassword,
-          roles,
+          roles : {
+            "connectOrCreate": [
+              {
+                  "where": { "name": role },
+                  "create": { "name": role }
+              }
+            ]
+          },
         },
         include: {
           roles: true, // Include roles in the response
@@ -62,5 +69,14 @@ exports.login = async (data) => {
       user: { connect: { id: user.id } },
     },
   });
-  return {newToken, user};
+  
+  return {token: token, userRole: user.roles[0].name, user};
+};
+
+
+exports.logout = async (data) => {
+  const user = await prisma.token.deleteMany({
+    where: { token: data },
+  });
+  return {user};
 };

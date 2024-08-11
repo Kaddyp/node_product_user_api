@@ -23,8 +23,9 @@ exports.createProduct = async (req, res) => {
 };
 exports.getProduct = async (req, res) => {
     try {
-        const allUsers = await prisma.product.findMany();
-        res.status(200).json(allUsers);
+        const allProducts = await prisma.product.findMany();
+        console.log('Get product:', allProducts);
+        res.status(200).json(allProducts);
     } catch (error) {
         res.status(404).send({ message: 'Product not found' });
     } finally {
