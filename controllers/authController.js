@@ -6,7 +6,7 @@ exports.register = async (req, res) => {
     try {
       console.log('register');
       const user = await authService.register(req.body);
-      res.status(200).send({message: 'User registered successfully', data: user});
+      res.status(201).send({message: 'User registered successfully', data: user});
     } catch (error) {
       res.status(400).send({ message: error.message });
     } finally {
@@ -41,7 +41,7 @@ exports.logout = async (req, res) => {
     res.clearCookie('token');
     res.status(200).json({ message: 'Logged out successfully'});
   } catch (error) {
-    res.status(400).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   } finally {
     await prisma.$disconnect();
   }

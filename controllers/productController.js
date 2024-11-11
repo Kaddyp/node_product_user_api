@@ -12,10 +12,10 @@ exports.createProduct = async (req, res) => {
             },
         });
         console.log('Created product:', newProduct);
-        res.status(200).send({ message: 'Product created successfully', data: newProduct });
+        res.status(201).send({ message: 'Product created successfully', data: newProduct });
 
     } catch (error) {
-      res.status(404).send({ message: 'Products not created successfully' });
+      res.status(400).send({ message: 'Products not created successfully' });
     }
     finally {
         await prisma.$disconnect();
